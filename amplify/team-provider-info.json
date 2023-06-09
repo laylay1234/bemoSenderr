@@ -1,0 +1,101 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xemotransfer-dev-174147-authRole",
+      "UnauthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-dev-174147-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-dev-174147-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-xemotransfer-dev-174147-deployment",
+      "UnauthRoleName": "amplify-xemotransfer-dev-174147-unauthRole",
+      "StackName": "amplify-xemotransfer-dev-174147",
+      "StackId": "arn:aws:cloudformation:us-west-1:490427575433:stack/amplify-xemotransfer-dev-174147/d449b640-294b-11ed-a807-0216229fea4b",
+      "AmplifyAppId": "d35u2txb6woblr"
+    },
+    "categories": {
+      "auth": {
+        "xemotransfer3d99df233d99df23": {}
+      },
+      "function": {
+        "TriggerKycVerification": {
+          "deploymentBucketName": "amplify-xemotransfer-dev-174147-deployment",
+          "s3Key": "amplify-builds/TriggerKycVerification-72763650555634564234-build.zip",
+          "secretsPathAmplifyAppId": "d35u2txb6woblr"
+        }
+      }
+    }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xemotransfer-prod-125211-authRole",
+      "UnauthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-prod-125211-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-prod-125211-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-xemotransfer-prod-125211-deployment",
+      "UnauthRoleName": "amplify-xemotransfer-prod-125211-unauthRole",
+      "StackName": "amplify-xemotransfer-prod-125211",
+      "StackId": "arn:aws:cloudformation:us-west-1:490427575433:stack/amplify-xemotransfer-prod-125211/ecd9b4c0-0f34-11ed-ae9b-02c4031cea31",
+      "AmplifyAppId": "d35u2txb6woblr"
+    },
+    "categories": {
+      "function": {
+        "TriggerKycVerification": {
+          "deploymentBucketName": "amplify-xemotransfer-prod-125211-deployment",
+          "s3Key": "amplify-builds/TriggerKycVerification-6831565672666a53484e-build.zip",
+          "secretsPathAmplifyAppId": "d35u2txb6woblr"
+        }
+      },
+      "auth": {
+        "xemotransfer3d99df233d99df23": {}
+      }
+    }
+  },
+  "test": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xemotransfer-test-142814-authRole",
+      "UnauthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-test-142814-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-test-142814-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-xemotransfer-test-142814-deployment",
+      "UnauthRoleName": "amplify-xemotransfer-test-142814-unauthRole",
+      "StackName": "amplify-xemotransfer-test-142814",
+      "StackId": "arn:aws:cloudformation:us-west-1:490427575433:stack/amplify-xemotransfer-test-142814/c96e9f20-1fc2-11ed-9b52-0298771b0b81",
+      "AmplifyAppId": "d35u2txb6woblr"
+    },
+    "categories": {
+      "auth": {
+        "xemotransfer3d99df233d99df23": {}
+      },
+      "function": {
+        "TriggerKycVerification": {
+          "deploymentBucketName": "amplify-xemotransfer-test-142814-deployment",
+          "s3Key": "amplify-builds/TriggerKycVerification-53512b49344d504f3874-build.zip"
+        }
+      }
+    }
+  },
+  "devenv": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xemotransfer-devenv-160745-authRole",
+      "UnauthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-devenv-160745-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::490427575433:role/amplify-xemotransfer-devenv-160745-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-xemotransfer-devenv-160745-deployment",
+      "UnauthRoleName": "amplify-xemotransfer-devenv-160745-unauthRole",
+      "StackName": "amplify-xemotransfer-devenv-160745",
+      "StackId": "arn:aws:cloudformation:us-west-1:490427575433:stack/amplify-xemotransfer-devenv-160745/2d4707a0-45aa-11ed-8f06-0257d25ed9ef",
+      "AmplifyAppId": "d35u2txb6woblr"
+    },
+    "categories": {
+      "auth": {
+        "xemotransfer3d99df233d99df23": {}
+      },
+      "function": {
+        "TriggerKycVerification": {
+          "secretsPathAmplifyAppId": "d35u2txb6woblr",
+          "deploymentBucketName": "amplify-xemotransfer-devenv-160745-deployment",
+          "s3Key": "amplify-builds/TriggerKycVerification-6d534869356357596271-build.zip"
+        }
+      }
+    }
+  }
+}

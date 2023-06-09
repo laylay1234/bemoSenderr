@@ -1,0 +1,100 @@
+{
+  "auth": {
+    "xemotransfer3d99df233d99df23": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "signupAttributes": [
+          "PHONE_NUMBER"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": "6",
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OPTIONAL",
+        "mfaTypes": [
+          "SMS",
+          "TOTP"
+        ],
+        "verificationMechanisms": [
+          "PHONE_NUMBER"
+        ]
+      }
+    }
+  },
+  "api": {
+    "xemotransfer": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "xemotransfer3d99df233d99df23",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authxemotransfer3d99df233d99df23"
+            }
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "API_KEY",
+              "apiKeyConfig": {
+                "apiKeyExpirationDays": 365,
+                "apiKeyExpirationDate": "2023-10-06T18:47:31.160Z",
+                "description": ""
+              }
+            },
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "analytics": {
+    "xemotransfer": {
+      "service": "Pinpoint",
+      "providerPlugin": "awscloudformation"
+    }
+  },
+  "function": {
+    "TriggerKycVerification": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "xemotransfer",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "xemotransfer",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
+          ]
+        }
+      ]
+    }
+  },
+  "custom": {}
+}

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "864042314318",
+    "project_id": "xemodev-a21db",
+    "storage_bucket": "xemodev-a21db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864042314318:android:c617fd12cd761addc4711f",
+        "android_client_info": {
+          "package_name": "com.xemotransfer.mobileapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "864042314318-hdm4m3slggj4o0uar8vsok0b16mhq5jl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyn-AzVIYyS-ossZ_vQFqWtNsrS73rqTE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "864042314318-hdm4m3slggj4o0uar8vsok0b16mhq5jl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "864042314318-8o3hcipkgbvjo7l1gtg6cqi84lnsedjk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

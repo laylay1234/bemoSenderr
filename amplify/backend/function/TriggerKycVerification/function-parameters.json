@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "api": {
+      "xemotransfer": [
+        "Query",
+        "Mutation"
+      ]
+    }
+  },
+  "lambdaLayers": [],
+  "secretNames": [
+    "GRAPHQL_ENDPOINT",
+    "USERNAME",
+    "password"
+  ]
+}

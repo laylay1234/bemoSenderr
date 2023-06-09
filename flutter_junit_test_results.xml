@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite errors="0" failures="0" tests="1" skipped="0" name=".Users.surisakchongrampai.repo.omnigate_xemo.mobile_app.test.unit" timestamp="2022-09-13T17:07:01">
+    <properties>
+      <property name="platform" value="vm"/>
+    </properties>
+    <testcase classname=".Users.surisakchongrampai.repo.omnigate_xemo.mobile_app.test.unit" name="simple" time="0.055"/>
+  </testsuite>
+  <testsuite errors="0" failures="0" tests="1" skipped="0" name=".Users.surisakchongrampai.repo.omnigate_xemo.mobile_app.test.widget" timestamp="2022-09-13T17:07:01">
+    <properties>
+      <property name="platform" value="vm"/>
+    </properties>
+    <testcase classname=".Users.surisakchongrampai.repo.omnigate_xemo.mobile_app.test.widget" name="simple" time="0.057"/>
+  </testsuite>
+</testsuites>

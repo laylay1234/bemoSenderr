@@ -1,0 +1,21 @@
+{
+    "appName": "xemotransfer",
+    "roleName": "pinpointLambdaRole1daccf07",
+    "cloudformationPolicyName": "cloudformationPolicy1daccf07",
+    "cloudWatchPolicyName": "cloudWatchPolicy1daccf07",
+    "pinpointPolicyName": "pinpointPolicy1daccf07",
+    "authPolicyName": "pinpoint_amplify_1daccf07",
+    "unauthPolicyName": "pinpoint_amplify_1daccf07",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}

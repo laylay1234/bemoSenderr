@@ -1,0 +1,29 @@
+## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put("hasAuth", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == "API Key Authorization" )
+
+#end
+#if( $util.authType() == "IAM Authorization" )
+  #set( $adminRoles = ["us-west-1_8vJAsIIPA_Full-access/CognitoIdentityCredentials","us-west-1_8vJAsIIPA_Manage-only/CognitoIdentityCredentials","TriggerKycVerification-devenv","kbourahla","ibena","Dev-V3-Instance-Role","xemotransferLambdaRole5506c68b-dev","xemotransferLambdaRole5506c68b-devenv"] )
+  #foreach( $adminRole in $adminRoles )
+    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+      #return($util.toJson({}))
+    #end
+  #end
+  #if( !$isAuthorized )
+    #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "us-west-1:1c1caf98-e2a9-44bb-bb7c-ccb9fe0489af" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( $util.authType() == "User Pool Authorization" )
+  #if( !$isAuthorized )
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({"version":"2018-05-29","payload":{}})
+## [End] Authorization Steps. **

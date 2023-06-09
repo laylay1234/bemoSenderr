@@ -1,0 +1,125 @@
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+def buildNumber = flutterVersionCode.toInteger()
+def keystoreFile = keystoreProperties['storeFile'] != null ? file(keystoreProperties['storeFile']) : null
+def keystoreAlias = keystoreProperties['keyAlias'] != null ? keystoreProperties['keyAlias'] : null
+def keystorePassword = keystoreProperties['storePassword'] != null ? keystoreProperties['storePassword'] : null
+def privatekeyPassword = keystoreProperties['keyPassword'] != null ? keystoreProperties['keyPassword'] : null
+def bitriseBuildNumber = System.getenv("BITRISE_BUILD_NUMBER")
+if (bitriseBuildNumber != null) {
+    buildNumber = bitriseBuildNumber.toInteger()
+
+    def bitriseKeyStoreFile = System.getenv("BITRISEIO_ANDROID_KEYSTORE_URL")
+    if (bitriseKeyStoreFile != null) {
+        // Bitrise workflow has a step to download the keystore file to local path
+        keystoreFile = file(System.getenv("HOME") + "/keystores/android_keystore.jks")
+    }
+
+    def bitriseKeyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS")
+    if (bitriseKeyAlias != null) {
+        keystoreAlias = bitriseKeyAlias
+    }
+
+    def bitriseKeyStorePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
+    if (bitriseKeyStorePassword != null) {
+        keystorePassword = bitriseKeyStorePassword
+    }
+
+    def bitrisePrivateKeyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
+    if (bitrisePrivateKeyPassword != null) {
+        privatekeyPassword = bitrisePrivateKeyPassword
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
+android {
+    compileSdkVersion 33
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "com.xemotransfer.alpha"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionName flutterVersionName
+        versionCode buildNumber
+        multiDexEnabled true
+    }
+
+    // This is for code signing configs set up locally which needs a file called "key.properties" at the root of the folder "android"
+    // and inside the file, it has to contain the correct keywords and values.
+    signingConfigs {
+       release {
+           keyAlias keystoreAlias
+           keyPassword privatekeyPassword
+           storePassword keystorePassword
+           storeFile keystoreFile
+       }
+   }
+   buildTypes {
+       release {
+           // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            minifyEnabled false
+            shrinkResources false
+            // signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+       }
+   }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
+    implementation "androidx.multidex:multidex:2.0.1"
+    implementation "com.google.android.material:material:1.5.0"
+    implementation platform('com.google.firebase:firebase-bom:30.0.0')
+    implementation 'com.google.firebase:firebase-analytics'
+}

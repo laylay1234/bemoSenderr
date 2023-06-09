@@ -1,0 +1,12 @@
+{
+  "AppSyncApiName": "xemotransfer",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authxemotransfer3d99df233d99df23",
+      "Outputs.UserPoolId"
+    ]
+  },
+  "AuthModeLastUpdated": "2022-10-06T18:47:33.875Z"
+}

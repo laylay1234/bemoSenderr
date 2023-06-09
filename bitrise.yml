@@ -1,0 +1,384 @@
+---
+format_version: '11'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: flutter
+workflows:
+  deploy_alpha:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@6: {}
+    - certificate-and-profile-installer@1: {}
+    - install-flutter-version-manager@1: {}
+    - flutter-installer@0:
+        inputs:
+        - is_update: 'false'
+    - cache-pull@2: {}
+    - flutter-analyze@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            dart pub global activate junitreport
+
+            # init amplify in flutter project
+            bash ./amplify_cicd_alpha.sh
+
+            # checkout alpha configuration
+            bash ./checkout_alpha.sh
+    - flutter-test@1:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - file-downloader@1:
+        inputs:
+        - destination: "$HOME/keystores/android_keystore.jks"
+        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
+    - flutter-build@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+        - platform: both
+        - android_output_type: appbundle
+        - android_additional_params: "--release --dart-define BUILD_ENV=DEV"
+        - ios_additional_params: "--release --dart-define BUILD_ENV=DEV"
+        - ios_codesign_identity: ''
+        is_always_run: true
+    - cocoapods-install@2:
+        inputs:
+        - source_root_path: "$BITRISE_SOURCE_DIR/ios"
+    - get-pubspec-version-and-build-number@1: {}
+    - change-android-versioncode-and-versionname@1:
+        inputs:
+        - version_code_offset: ''
+        - build_gradle_path: "$BITRISE_SOURCE_DIR/android/app/build.gradle"
+        - new_version_name: "$PUBSPEC_VERSION_NAME"
+    - set-xcode-build-number@1:
+        inputs:
+        - build_short_version_string: "$PUBSPEC_VERSION_NAME"
+        - plist_path: ios/Runner/Info.plist
+    - xcode-archive@4:
+        inputs:
+        - configuration: Release
+        - automatic_code_signing: api-key
+        - distribution_method: "$BITRISE_DISTRIBUTION_METHOD"
+    - deploy-to-itunesconnect-application-loader@1:
+        inputs:
+        - platform: ios
+        - connection: api_key
+    - google-play-deploy@3:
+        inputs:
+        - package_name: com.xemotransfer.alpha
+        - service_account_json_key_path: "$BITRISEIO_SERVICE_ACCOUNT_JSON_KEY_URL"
+    - cache-push@2: {}
+    - deploy-to-bitrise-io@2:
+        is_always_run: false
+    - discord-message@0:
+        inputs:
+        - mention_role: ''
+        - webhook_url: "$BITRISE_DISCORD_WEBHOOK_URL"
+        is_always_run: false
+    envs:
+    - opts:
+        is_expand: false
+      AMPLIFY_PROJECT_ENV: dev
+  deploy_beta:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@6: {}
+    - certificate-and-profile-installer@1: {}
+    - install-flutter-version-manager@1: {}
+    - flutter-installer@0:
+        inputs:
+        - is_update: 'false'
+    - cache-pull@2: {}
+    - flutter-analyze@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            dart pub global activate junitreport
+
+            # init amplify in flutter project
+            bash ./amplify_cicd_beta.sh
+
+            # checkout beta configuration
+            bash ./checkout_beta.sh
+    - flutter-test@1:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - file-downloader@1:
+        inputs:
+        - destination: "$HOME/keystores/android_keystore.jks"
+        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
+    - flutter-build@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+        - platform: both
+        - android_output_type: appbundle
+        - ios_additional_params: "--release --dart-define BUILD_ENV=PROD"
+        - android_additional_params: "--release --dart-define BUILD_ENV=PROD"
+        - ios_codesign_identity: ''
+        is_always_run: true
+    - cocoapods-install@2:
+        inputs:
+        - source_root_path: "$BITRISE_SOURCE_DIR/ios"
+    - get-pubspec-version-and-build-number@1: {}
+    - change-android-versioncode-and-versionname@1:
+        inputs:
+        - version_code_offset: ''
+        - build_gradle_path: "$BITRISE_SOURCE_DIR/android/app/build.gradle"
+        - new_version_name: "$PUBSPEC_VERSION_NAME"
+    - set-xcode-build-number@1:
+        inputs:
+        - build_short_version_string: "$PUBSPEC_VERSION_NAME"
+        - plist_path: ios/Runner/Info.plist
+    - xcode-archive@4:
+        inputs:
+        - configuration: Release
+        - automatic_code_signing: api-key
+        - distribution_method: "$BITRISE_DISTRIBUTION_METHOD"
+    - deploy-to-itunesconnect-application-loader@1:
+        inputs:
+        - platform: ios
+        - connection: api_key
+    - google-play-deploy@3:
+        inputs:
+        - package_name: com.xemotransfer.mobileapp
+        - service_account_json_key_path: "$BITRISEIO_SERVICE_ACCOUNT_JSON_KEY_URL"
+    - cache-push@2: {}
+    - deploy-to-bitrise-io@2:
+        is_always_run: false
+    - discord-message@0:
+        inputs:
+        - mention_role: ''
+        - webhook_url: "$BITRISE_DISCORD_WEBHOOK_URL"
+        is_always_run: false
+    envs:
+    - opts:
+        is_expand: false
+      AMPLIFY_PROJECT_ENV: prod
+  primary:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@6: {}
+    - flutter-installer@0:
+        inputs:
+        - is_update: 'false'
+    - cache-pull@2: {}
+    - flutter-test@1:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - cache-push@2: {}
+    - deploy-to-bitrise-io@2: {}
+  test_alpha:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@6: {}
+    - certificate-and-profile-installer@1: {}
+    - install-flutter-version-manager@1: {}
+    - flutter-installer@0:
+        inputs:
+        - is_update: 'false'
+    - cache-pull@2: {}
+    - flutter-analyze@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            #!/bin/bash
+            set -e
+            IFS='|'
+
+            bash ./amplify_cicd_alpha.sh
+            bash ./checkout_alpha.sh
+    - flutter-test@1:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - file-downloader@1:
+        inputs:
+        - destination: "$HOME/keystores/android_keystore.jks"
+        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
+    - flutter-build@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+        - platform: android
+        - android_additional_params: "--release --dart-define BUILD_ENV=DEV"
+        - ios_additional_params: "--release --dart-define BUILD_ENV=DEV"
+        - ios_codesign_identity: ''
+        is_always_run: true
+    - get-pubspec-version-and-build-number@1: {}
+    - change-android-versioncode-and-versionname@1:
+        inputs:
+        - version_code_offset: ''
+        - build_gradle_path: "$BITRISE_SOURCE_DIR/android/app/build.gradle"
+        - new_version_name: "$PUBSPEC_VERSION_NAME"
+    - cache-push@2: {}
+    - deploy-to-bitrise-io@2:
+        is_always_run: false
+    envs:
+    - opts:
+        is_expand: false
+      AMPLIFY_PROJECT_ENV: dev
+  test_beta:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@6: {}
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            echo $BITRISE_SOURCE_DIR
+    - certificate-and-profile-installer@1: {}
+    - install-flutter-version-manager@1: {}
+    - flutter-installer@0:
+        inputs:
+        - is_update: 'false'
+    - cache-pull@2: {}
+    - flutter-analyze@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            # write your script here
+            #!/bin/bash
+            set -e
+            IFS='|'
+
+            bash ./amplify_cicd_beta.sh
+            bash ./build_checkout_beta.sh
+    - flutter-test@1:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - file-downloader@1:
+        inputs:
+        - destination: "$HOME/keystores/android_keystore.jks"
+        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
+    - flutter-build@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+        - platform: android
+        - android_additional_params: "--release --dart-define BUILD_ENV=PROD"
+        - ios_additional_params: "--release --dart-define BUILD_ENV=PROD"
+        - ios_codesign_identity: ''
+        is_always_run: true
+    - get-pubspec-version-and-build-number@1: {}
+    - change-android-versioncode-and-versionname@1:
+        inputs:
+        - version_code_offset: ''
+        - build_gradle_path: "$BITRISE_SOURCE_DIR/android/app/build.gradle"
+        - new_version_name: "$PUBSPEC_VERSION_NAME"
+    - cache-push@2: {}
+    - deploy-to-bitrise-io@2:
+        is_always_run: false
+    envs:
+    - opts:
+        is_expand: false
+      AMPLIFY_PROJECT_ENV: prod
+meta:
+  bitrise.io:
+    stack: osx-xcode-13.3.x
+    machine_type_id: g2.4core
+app:
+  envs:
+  - opts:
+      is_expand: false
+    BITRISE_FLUTTER_PROJECT_LOCATION: "."
+  - opts:
+      is_expand: false
+    BITRISE_PROJECT_PATH: ios/Runner.xcworkspace
+  - opts:
+      is_expand: false
+    BITRISE_SCHEME: Runner
+  - opts:
+      is_expand: false
+    BITRISE_DISTRIBUTION_METHOD: app-store
+  - FLUTTER_BUILD_NUMBER: "$BITRISE_BUILD_NUMBER"
+  - PUBSPEC_VERSION_NAME: "$PUBSPEC_VERSION_NAME"
+  - opts:
+      is_expand: false
+    AMPLIFY_PROJECT_NAME: xemotransfer
+trigger_map:
+- tag: "*.*.*"
+  workflow: deploy_alpha

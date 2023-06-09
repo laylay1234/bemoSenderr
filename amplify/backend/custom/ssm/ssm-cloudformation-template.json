@@ -1,0 +1,282 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "apixemotransferGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIKeyOutput attribute for api/xemotransfer resource"
+    },
+    "apixemotransferGraphQLAPIIdOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIIdOutput attribute for api/xemotransfer resource"
+    },
+    "apixemotransferGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIEndpointOutput attribute for api/xemotransfer resource"
+    },
+    "authxemotransfer122887f1IdentityPoolId": {
+      "Type": "String",
+      "Description": "Input parameter describing IdentityPoolId attribute for auth/xemotransfer122887f1 resource"
+    },
+    "authxemotransfer122887f1IdentityPoolName": {
+      "Type": "String",
+      "Description": "Input parameter describing IdentityPoolName attribute for auth/xemotransfer122887f1 resource"
+    },
+    "authxemotransfer122887f1UserPoolId": {
+      "Type": "String",
+      "Description": "Input parameter describing UserPoolId attribute for auth/xemotransfer122887f1 resource"
+    },
+    "authxemotransfer122887f1UserPoolArn": {
+      "Type": "String",
+      "Description": "Input parameter describing UserPoolArn attribute for auth/xemotransfer122887f1 resource"
+    },
+    "authxemotransfer122887f1UserPoolName": {
+      "Type": "String",
+      "Description": "Input parameter describing UserPoolName attribute for auth/xemotransfer122887f1 resource"
+    },
+    "authxemotransfer122887f1AppClientIDWeb": {
+      "Type": "String",
+      "Description": "Input parameter describing AppClientIDWeb attribute for auth/xemotransfer122887f1 resource"
+    },
+    "authxemotransfer122887f1AppClientID": {
+      "Type": "String",
+      "Description": "Input parameter describing AppClientID attribute for auth/xemotransfer122887f1 resource"
+    },
+    "authxemotransfer122887f1CreatedSNSRole": {
+      "Type": "String",
+      "Description": "Input parameter describing CreatedSNSRole attribute for auth/xemotransfer122887f1 resource"
+    },
+    "functionTriggerKycVerificationName": {
+      "Type": "String",
+      "Description": "Input parameter describing Name attribute for function/TriggerKycVerification resource"
+    },
+    "functionTriggerKycVerificationArn": {
+      "Type": "String",
+      "Description": "Input parameter describing Arn attribute for function/TriggerKycVerification resource"
+    },
+    "functionTriggerKycVerificationRegion": {
+      "Type": "String",
+      "Description": "Input parameter describing Region attribute for function/TriggerKycVerification resource"
+    },
+    "functionTriggerKycVerificationLambdaExecutionRole": {
+      "Type": "String",
+      "Description": "Input parameter describing LambdaExecutionRole attribute for function/TriggerKycVerification resource"
+    },
+    "analyticsxemotransferRegion": {
+      "Type": "String",
+      "Description": "Input parameter describing Region attribute for analytics/xemotransfer resource"
+    },
+    "analyticsxemotransferId": {
+      "Type": "String",
+      "Description": "Input parameter describing Id attribute for analytics/xemotransfer resource"
+    },
+    "analyticsxemotransferappName": {
+      "Type": "String",
+      "Description": "Input parameter describing appName attribute for analytics/xemotransfer resource"
+    },
+    "storages35a59748bBucketName": {
+      "Type": "String",
+      "Description": "Input parameter describing BucketName attribute for storage/s35a59748b resource"
+    },
+    "storages35a59748bRegion": {
+      "Type": "String",
+      "Description": "Input parameter describing Region attribute for storage/s35a59748b resource"
+    }
+  },
+  "Mappings": {
+    "Environment": {
+      "Names": {
+        "dev": "/Dev-V3/",
+        "prod": "/Prod-V3/"
+      }
+    }
+  },
+  "Resources": {
+    "ssmgraphqlendpoint": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Environment",
+                  "Names",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              },
+              "GRAPHQL_ENDPOINT"
+            ]
+          ]
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "apixemotransferGraphQLAPIEndpointOutput"
+        }
+      }
+    },
+    "ssmgraphqlid": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Environment",
+                  "Names",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              },
+              "GRAPHQL_ID"
+            ]
+          ]
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "apixemotransferGraphQLAPIIdOutput"
+        }
+      }
+    },
+    "ssmpoolid": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Environment",
+                  "Names",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              },
+              "COGNITO_USER_POOL"
+            ]
+          ]
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "authxemotransfer122887f1UserPoolId"
+        }
+      }
+    },
+    "ssmpoolarn": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Environment",
+                  "Names",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              },
+              "COGNITO_USER_POOL_ARN"
+            ]
+          ]
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "authxemotransfer122887f1UserPoolArn"
+        }
+      }
+    },
+    "ssmappclientid": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Environment",
+                  "Names",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              },
+              "COGNITO_CLIENT_ID"
+            ]
+          ]
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "authxemotransfer122887f1AppClientID"
+        }
+      }
+    },
+    "pinpointregion": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Environment",
+                  "Names",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              },
+              "PINPOINT_REGION"
+            ]
+          ]
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "analyticsxemotransferRegion"
+        }
+      }
+    },
+    "pinpointappid": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Environment",
+                  "Names",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              },
+              "PINPOINT_APP_ID"
+            ]
+          ]
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "analyticsxemotransferId"
+        }
+      }
+    }
+  },
+  "Outputs": {},
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"9.2.1\",\"stackType\":\"custom-customCloudformation\",\"metadata\":{}}"
+}

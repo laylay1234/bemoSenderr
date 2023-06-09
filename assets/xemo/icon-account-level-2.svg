@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>8739802D-65F4-40C1-8DB0-A11D5694D1E1</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#20C9A7" offset="0%"></stop>
+            <stop stop-color="#3CF3CE" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="settings_verified" transform="translate(-310.000000, -205.000000)">
+            <g id="ic_status_verified" transform="translate(310.000000, 205.000000)">
+                <polygon id="bg_status_verified" fill="url(#linearGradient-1)" points="15.0004051 2.76417056 12.0158786 0 10.3178418 3.69582242 6.50374011 2.28295212 6.34900489 6.34819476 2.28376225 6.50292998 3.69663255 10.3170317 0 12.0158786 2.76498069 15.0004051 0 17.9841214 3.69663255 19.6821582 2.28376225 23.4962599 6.34900489 23.6509951 6.50374011 27.7162377 10.3178418 26.3033674 12.0158786 30 15.0004051 27.2342092 17.9841214 30 19.6829683 26.3033674 23.49707 27.7162377 23.6509951 23.6509951 27.7170479 23.4962599 26.3041776 19.6821582 30 17.9841214 27.2358294 15.0004051 30 12.0158786 26.3041776 10.3170317 27.7170479 6.50292998 23.6509951 6.34819476 23.49707 2.28295212 19.6829683 3.69582242 17.9841214 0"></polygon>
+                <polygon id="Path" fill="#FFFFFF" points="20.2192931 10 22 11.7549231 13.6298378 20 9 15.4385239 10.7815468 13.6836009 13.6298378 16.4901539"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,464 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"8.3.1\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Parameters": {
+    "CloudWatchRule": {
+      "Type": "String",
+      "Default": "NONE",
+      "Description": " Schedule Expression"
+    },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "s3Key": {
+      "Type": "String"
+    },
+    "apixemotransferGraphQLAPIIdOutput": {
+      "Type": "String",
+      "Default": "apixemotransferGraphQLAPIIdOutput"
+    },
+    "apixemotransferGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apixemotransferGraphQLAPIEndpointOutput"
+    },
+    "apixemotransferGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apixemotransferGraphQLAPIKeyOutput"
+    },
+    "secretsPathAmplifyAppId": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "LambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Metadata": {
+        "aws:asset:path": "./src",
+        "aws:asset:property": "Code"
+      },
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
+        },
+        "Handler": "index.handler",
+        "FunctionName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "TriggerKycVerification",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "TriggerKycVerification",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": {
+              "Ref": "env"
+            },
+            "REGION": {
+              "Ref": "AWS::Region"
+            },
+            "API_XEMOTRANSFER_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apixemotransferGraphQLAPIIdOutput"
+            },
+            "API_XEMOTRANSFER_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apixemotransferGraphQLAPIEndpointOutput"
+            },
+            "API_XEMOTRANSFER_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apixemotransferGraphQLAPIKeyOutput"
+            },
+            "GRAPHQL_ENDPOINT": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Sub": [
+                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
+                      {
+                        "appId": {
+                          "Ref": "secretsPathAmplifyAppId"
+                        },
+                        "env": {
+                          "Ref": "env"
+                        },
+                        "functionName": "TriggerKycVerification"
+                      }
+                    ]
+                  },
+                  "GRAPHQL_ENDPOINT"
+                ]
+              ]
+            },
+            "USERNAME": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Sub": [
+                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
+                      {
+                        "appId": {
+                          "Ref": "secretsPathAmplifyAppId"
+                        },
+                        "env": {
+                          "Ref": "env"
+                        },
+                        "functionName": "TriggerKycVerification"
+                      }
+                    ]
+                  },
+                  "USERNAME"
+                ]
+              ]
+            },
+            "password": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Sub": [
+                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
+                      {
+                        "appId": {
+                          "Ref": "secretsPathAmplifyAppId"
+                        },
+                        "env": {
+                          "Ref": "env"
+                        },
+                        "functionName": "TriggerKycVerification"
+                      }
+                    ]
+                  },
+                  "password"
+                ]
+              ]
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaExecutionRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.9",
+        "Layers": [],
+        "Timeout": 25
+      }
+    },
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "xemotransferLambdaRole5506c68b",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "xemotransferLambdaRole5506c68b",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "lambdaexecutionpolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                  {
+                    "region": {
+                      "Ref": "AWS::Region"
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "lambda": {
+                      "Ref": "LambdaFunction"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AmplifyResourcesPolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "appsync:GraphQL"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apixemotransferGraphQLAPIIdOutput"
+                      },
+                      "/types/Query/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apixemotransferGraphQLAPIIdOutput"
+                      },
+                      "/types/Mutation/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "LambdaTriggerPolicyUser": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-lambda-execution-policy-User",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:ListStreams"
+              ],
+              "Resource": {
+                "Fn::ImportValue": {
+                  "Fn::Sub": "${apixemotransferGraphQLAPIIdOutput}:GetAtt:UserTable:StreamArn"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "LambdaEventSourceMappingUser": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "LambdaTriggerPolicyUser",
+        "LambdaExecutionRole"
+      ],
+      "Properties": {
+        "BatchSize": 100,
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${apixemotransferGraphQLAPIIdOutput}:GetAtt:UserTable:StreamArn"
+          }
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "LambdaFunction",
+            "Arn"
+          ]
+        },
+        "StartingPosition": "LATEST"
+      }
+    },
+    "AmplifyFunctionSecretsPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-function-secrets-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ssm:GetParameter",
+                "ssm:GetParameters"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter",
+                    {
+                      "Fn::Sub": [
+                        "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
+                        {
+                          "appId": {
+                            "Ref": "secretsPathAmplifyAppId"
+                          },
+                          "env": {
+                            "Ref": "env"
+                          },
+                          "functionName": "TriggerKycVerification"
+                        }
+                      ]
+                    },
+                    "*"
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ]
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": {
+        "Ref": "LambdaFunction"
+      }
+    },
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaFunction",
+          "Arn"
+        ]
+      }
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "LambdaExecutionRole": {
+      "Value": {
+        "Ref": "LambdaExecutionRole"
+      }
+    }
+  }
+}

@@ -1,0 +1,189 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+
+enum GenericStatus {
+    PENDING
+    BLOCKED
+    CONFIRMED
+    ACTIVE
+}
+enum UserBankVerificaitonStatus{
+    NOT_VERIFIED
+    IN_PROGRESS
+    ERROR
+    VERIFIED
+} 
+enum GlobalTransactionStatus {
+    NEW
+    FUNDTRANSACTION_IN_PROGRESS
+    COLLECTTRANSACTION_IN_PROGRESS
+    REFUNDTRANSACTION_IN_PROGRESS
+    SUCCESS
+    CANCELLED
+    MANUAL_INTERVENTION_NEEDED
+    REFUNDED
+    BLOCKED
+    COLLECT_ERROR
+    COLLECT_ON_HOLD
+    FUNDING_ERROR
+    NOT_FOUND
+    REFUNDED_ERROR 
+}
+
+enum TransferReason{
+    FAMILY_HELP
+    BUSINESS
+    CHARITY
+    MEDICAL
+    OTHER
+}
+
+enum Gender{
+    Male
+    Female
+    Other
+}
+
+
+type User @model @auth(rules: [{ allow: owner  ,identityClaim: "sub"}, { allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    email: String!
+    phone_number: String!
+    newsletter_subscription: Boolean!
+    address_books: [AddressBook] @hasMany(indexName: "AddressBooksByUser", fields: ["id"])
+    global_transactions: [GlobalTransaction] @hasMany(indexName: "GlobalTransactionsByUser", fields: ["id"])
+    profile: Profile @hasOne(fields: ["profileID"])
+    profileID: ID!
+    occupation: String!
+    origin_country_iso: String
+    origin_calling_code: String
+    bank_verification_status: UserBankVerificaitonStatus
+    user_status: GenericStatus! #@auth(rules: [{ allow: owner , operations: [read]}, { allow: private, provider: iam }])
+    kyc_level: Int! #@auth(rules: [{ allow: owner , operations: [read]}, { allow: private, provider: iam }])
+    data: AWSJSON
+}
+
+type Profile @model @auth(rules: [{ allow: owner ,identityClaim: "sub",operations: [create,read,update]}, { allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    first_name: String!
+    last_name: String!
+    gender: Gender! #do we need gender in the profile?
+    country: String!
+    address: Address @hasOne(fields: ["addressID"])
+    addressID: ID!
+    identity_document: IdentityDocument @hasOne(fields: ["identity_documentID"])
+    identity_documentID: ID!
+    birth_date: BirthDate @hasOne(fields: ["birth_dateID"])
+    birth_dateID: ID!
+}
+
+type BirthDate @model @auth(rules: [{ allow: owner,identityClaim: "sub" , operations: [create,read,update] }, { allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    date_of_birth: AWSDateTime!
+    birth_country: String!
+    birth_city: String!
+}
+
+type IdentityDocument @model @auth(rules: [{ allow: owner,identityClaim: "sub" ,operations: [create,read,update]}, { allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    type: String!
+    number: String!
+    expiration_date: AWSDateTime!
+}
+
+type Address @model @auth(rules: [{ allow: owner,identityClaim: "sub" }, { allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    city: String!
+    postal_code: String!
+    state: String
+    countryID: ID @index(name: "AddressesByCountry", sortKeyFields: ["id"])
+    country: Country @belongsTo(fields: ["countryID"])
+    address_line_1: String
+    address_line_2: String
+}
+
+type AddressBook @model @auth(rules: [{ allow: owner ,identityClaim: "sub"}, { allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    userID: ID! @index(name: "AddressBooksByUser", sortKeyFields: ["first_name"])
+    user: User @belongsTo(fields: ["userID"])
+    removed: Boolean @default(value: "false")
+    language: String @default(value: "french")
+    first_name: String!
+    last_name: String!
+    phone_number: String!
+    address: Address @hasOne(fields: ["addressID"])
+    addressID: ID!
+    gender: Gender!
+    mobile_network: String
+    bank_swift_code: String
+    account_number: String
+    transactions: [GlobalTransaction] @hasMany(indexName: "GlobalTransactionsByAddressBook", fields: ["id"])
+}
+
+type GlobalTransaction @model @auth(rules: [{ allow: owner, identityClaim: "sub" , operations: [create,read]}, { allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    status: GlobalTransactionStatus! @auth(rules: [{ allow: owner ,identityClaim: "sub", operations: [read,create]}, { allow: private, provider: iam }])
+    userID: ID! @index(name: "GlobalTransactionsByUser", sortKeyFields: ["created_at"])
+    user: User @belongsTo(fields: ["userID"])
+    receiverID: ID! @index(name: "GlobalTransactionsByAddressBook", sortKeyFields:["created_at"])
+    receiver: AddressBook @belongsTo(fields: ["receiverID"])
+    parameters: Parameters @hasOne(fields: ["parametersID"])
+    parametersID: ID!
+    collect_transactions: [CollectTransaction] @hasMany(indexName: "CollectTransactionsByGlobalTransaction", fields: ["id"])
+    funding_date: AWSDateTime!
+    collect_date: AWSDateTime!
+    created_at: AWSDateTime!
+}
+
+type Parameters @model @auth(rules: [{ allow: private, operations: [read]},{ allow: owner , identityClaim: "sub" ,operations: [read,create,update]}, { allow: private, provider: iam }]){
+    id:ID! @primaryKey
+    amount_origin: String! #... example 10 Canadian $
+    amount_destination: String! #... would be 3.54 in MAD
+    total: String! # final ammount (with the exchange rate and fees) will be 1.99 Canadian $
+    applicable_rate: String!
+    transfer_reason: TransferReason! #
+    origin_country: Country @hasOne(fields: ["origin_countryID"])  # Canada country
+    origin_countryID: ID!
+    destination_country: Country @hasOne(fields: ["destination_countryID"])  # Morroco country
+    destination_countryID: ID!
+    currency_origin: Currency @hasOne(fields: ["currency_originID"]) # canadian $
+    currency_originID: ID!
+    currency_destination: Currency @hasOne(fields: ["currency_destinationID"])  # mad
+    currency_destinationID: ID!
+    collect_method_fee: String! # fees  0.99 candian $ for cach pick up
+    collect_method: String  # cach pick up or bank account
+    funding_method: String!, #.. interact email 
+}
+
+type Country @model @auth(rules: [{ allow: private, operations: [read]},{ allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    name: String!
+    iso_code:String!
+    enabled_as_origin: Boolean!
+    enabled_as_destination: Boolean!
+    active: Boolean!
+    calling_code: String
+    addresses: [Address] @hasMany(indexName: "AddressesByCountry", fields: ["id"])
+}
+
+type CollectTransaction @model @auth(rules: [{ allow: private, operations: [read]},{ allow: private, provider: iam }]){
+    id:ID! @primaryKey
+    globalTransactionID: ID! @index(name: "CollectTransactionsByGlobalTransaction")
+    img_urls: [String]!
+    collect_code: String!
+    partner_name: String!
+    status: String!
+}
+
+
+type Currency @model @auth(rules: [{ allow: private, operations: [read]},{ allow: private, provider: iam }]){
+    id: ID! @primaryKey
+    iso_code:String! # cad
+    short_sign:String! # 
+    sign:String! # cad$
+    name:String! # canadian dollar
+}
+
+type AppSettings @model @auth(rules: [{ allow: private, operations: [read]},{ allow: private, provider: iam }]){
+    content: AWSJSON!
+}
